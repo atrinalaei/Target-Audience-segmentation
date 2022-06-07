@@ -8,7 +8,7 @@ import os
 dir='D:/atrin/atrin/clustering'
 classes=["A","B"]
 TargetAges=['MAN_BTW_20','MAN_BTW_30']
-brand_name='brand_name'
+brand_name='BrandName'
 now = datetime.now()
 date_time = now.strftime("%Y%m%d_%H%M%S")
 arcpy.env.workspace = "{0}".format(dir)
@@ -17,10 +17,12 @@ df = pd.read_csv (r'TAZ_BlockData_Aggregate.csv')
 #calculating the number of targetAudiences
 df['TA']= df[TargetAges].sum(axis=1)
 
-#sicialclass filtering
+#socialclass filtering
 filt=df['SocialClass'].isin(classes)
 df_TargetSocialClass=df[filt]
 df2=df_TargetSocialClass[['TA','zone97','SocialClass']]
+df2.to_csv('{0}/SC_TA_{1}_{2}.csv'.format(dir,brand_name,date_time))
+
 zones=df['zones']
 TargetAudience=pd.merge(zones,df2,left_on='zones',right_on='zone97',how='outer')
 TargetAudience['TA'] = TargetAudience['TA'].fillna(0)
@@ -46,11 +48,11 @@ final=pd.merge(dfC,dfTAZ,left_on='SOURCE_ID',right_on='OBJECTID',how='outer')
 finall=final[['TAZ_zone97','COType','TargetAudience_csv_TA']]
 filt=finall['COType'].isin(['HH','HL'])
 finalll=finall[filt]
-finalll.to_csv('{0}/final{1}_{2}.csv'.format(dir,brand_name,date_time))
+finalll.to_csv('{0}/cluster_{1}_{2}.csv'.format(dir,brand_name,date_time))
 
 os.remove('TargetAudience.csv')
 os.remove('cluster.xls')
-arcpy.env.workspace = "{0}/clusterin.gdb".format(dir)
+arcpy.env.workspace = "{0}/clustering.gdb".format(dir)
 arcpy.Delete_management('TAZ_join',"")
 arcpy.Delete_management('cluster',"")
 
