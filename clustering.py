@@ -1,15 +1,22 @@
 import numpy as np
 import pandas as pd
 import arcpy
+import timestamp
+from datetime import datetime
+import os
 
+dir='D:/atrin/atrin/clustering'
 classes=["A","B"]
 TargetAges=['MAN_BTW_20','MAN_BTW_30']
-brand_name=['brand_name']
+brand_name='brand_name'
+now = datetime.now()
+date_time = now.strftime("%Y%m%d_%H%M%S")
+arcpy.env.workspace = "{0}".format(dir)
 
-df = pd.read_csv (r'D:/atrin/atrin/clustering/TAZ_BlockData_Aggregate.csv')
+df = pd.read_csv (r'TAZ_BlockData_Aggregate.csv')
 #calculating the number of targetAudiences
 df['TA']= df[TargetAges].sum(axis=1)
-print(df)
+
 #sicialclass filtering
 filt=df['SocialClass'].isin(classes)
 df_TargetSocialClass=df[filt]
@@ -17,40 +24,45 @@ df2=df_TargetSocialClass[['TA','zone97','SocialClass']]
 zones=df['zones']
 TargetAudience=pd.merge(zones,df2,left_on='zones',right_on='zone97',how='outer')
 TargetAudience['TA'] = TargetAudience['TA'].fillna(0)
-TargetAudience.to_csv('D:/atrin/atrin/clustering/TargetAudience.csv')
+TargetAudience.to_csv('TargetAudience.csv')
 
 
-arcpy.env.workspace = "D:/atrin/atrin/clustering"
-TargetAudience=pd.read_csv (r'D:/atrin/atrin/clustering/TargetAudience.csv')
+arcpy.env.workspace = "{0}".format(dir)
+TargetAudience=pd.read_csv (r'TargetAudience.csv')
 arcpy.MakeFeatureLayer_management("clustering.gdb/TAZ", "temmp")
 arcpy.AddJoin_management("temmp", "zone97", 'TargetAudience.csv', "zones")
 arcpy.CopyFeatures_management("temmp", "clustering.gdb/TAZ_join")
 TAZ_join='clustering.gdb/TAZ_join'     #filter_final_featureclass
 
-outputt='cluster{0}.shp'.format(brand_name)
+
 outputt='clustering.gdb/cluster'
 arcpy.stats.ClustersOutliers(TAZ_join, 'TargetAudience_csv_TA', outputt, 'INVERSE_DISTANCE', 'EUCLIDEAN_DISTANCE', 'NONE')
 outputt_xls='cluster.xls'
-arcpy.conversion.TableToExcel(outputt, outputt_csv)
+arcpy.conversion.TableToExcel(outputt, outputt_xls)
 
-dfC = pd.read_excel('D:/atrin/atrin/clustering/cluster.xls')
-dfTAZ=pd.read_csv('D:/atrin/atrin/clustering/TAZ.csv')
+dfC = pd.read_excel('{0}/cluster.xls'.format(dir))
+dfTAZ=pd.read_csv('{0}/TAZ.csv'.format(dir))
 final=pd.merge(dfC,dfTAZ,left_on='SOURCE_ID',right_on='OBJECTID',how='outer')
 finall=final[['TAZ_zone97','COType','TargetAudience_csv_TA']]
+filt=finall['COType'].isin(['HH','HL'])
+finalll=finall[filt]
+finalll.to_csv('{0}/final{1}_{2}.csv'.format(dir,brand_name,date_time))
 
-finall.to_csv('D:/atrin/atrin/clustering/final.csv')
-
-
-
-
-
-
-
-
-
+os.remove('TargetAudience.csv')
+os.remove('cluster.xls')
+arcpy.env.workspace = "{0}/clusterin.gdb".format(dir)
+arcpy.Delete_management('TAZ_join',"")
+arcpy.Delete_management('cluster',"")
 
 
 
+
+
+# TargetAudience.csv
+# temmp
+# clustering.gdb/TAZ_join
+# clustering.gdb/cluster
+# cluster.xls
 ##############################################################################
 # from esda.moran import Moran
 # from libpysal.weights import Queen, KNN
