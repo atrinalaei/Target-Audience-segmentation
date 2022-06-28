@@ -33,7 +33,7 @@ df['TA']= df[TargetAges].sum(axis=1)
 filt=df['SocialClass'].isin(classes)
 df_TargetSocialClass=df[filt]
 df2=df_TargetSocialClass[TargetAgesss]
-# df2.to_csv('{0}/SC_TA_{1}_{2}.csv'.format(dir,brand_name,date_time))              ******
+df2.to_csv('{0}/SC_TA_{1}_{2}.csv'.format(dir,brand_name,date_time))
 
 zones=df['zones']
 TargetAudience=pd.merge(zones,df2,left_on='zones',right_on='zone97',how='outer')
@@ -72,7 +72,7 @@ dfC = pd.read_excel('{0}/cluster_HHHL.xls'.format(dir))
 dfTAZ=pd.read_csv('{0}/TAZ.csv'.format(dir))
 final=pd.merge(dfC,dfTAZ,left_on='SOURCE_ID',right_on='OBJECTID',how='outer')
 finall=final[['SOURCE_ID','TAZ_zone97','COType','TargetAudi']]
-# finall.to_csv('{0}/clusterT_{1}_{2}.csv'.format(dir,brand_name,date_time))              ******SS
+finall.to_csv('{0}/clusterT_{1}_{2}.csv'.format(dir,brand_name,date_time))
 filt=finall['COType'].isin(['HH','HL'])
 finalll=finall[filt]
 finalll.to_csv('{0}/cluster_{1}_{2}.csv'.format(dir,brand_name,date_time))
@@ -95,7 +95,7 @@ finalll_addcoloum.to_csv('{0}/cluster_data_{1}_{2}.csv'.format(dir,brand_name,da
 ################################################################################################################
 # arcpy.Delete_management('temmp')
 finalll_addcoloumn=finalll_addcoloum[TargetAgessss]
-
+print (finalll_addcoloumn)
 # finalll_addcoloumn.columns = finalll_addcoloumn.columns.str.replace('SOURCE_ID', 'SOURCE_ID')
 
 finalll_addcoloumn.to_csv('{0}/join.csv'.format(dir,brand_name,date_time))
@@ -116,13 +116,13 @@ field_names = []
 fields = arcpy.ListFields(input_grouping)
 for field in fields:
     field_names.append(field.name)
-
+print(field_names)
 Analysis_Fields=field_names[ii:jj]
-
+print(Analysis_Fields)
 arcpy.stats.GroupingAnalysis(input_grouping, "cluster_HH", output_grouping, "2", Analysis_Fields, 
                              "NO_SPATIAL_CONSTRAINT", "EUCLIDEAN","","","FIND_SEED_LOCATIONS","",Output_Report_File,
                              "DO_NOT_EVALUATE") 
-#finalCSV
+
 output_grouping_xls_file='{0}/Grouping_data_{1}_{2}.xls'.format(dir,brand_name,date_time)
 arcpy.TableToExcel_conversion (output_grouping, output_grouping_xls_file)
 df_grouping=pd.read_excel (r'{0}/Grouping_data_{1}_{2}.xls'.format(dir,brand_name,date_time))
@@ -141,6 +141,62 @@ if df.iloc[0,3] > df.iloc[1,3]:
     priority=1
 else :
       priority=2
-
+print (priority)
 os.remove('{0}/sumstats_{1}_{2}.xls'.format(dir,brand_name,date_time))
 arcpy.Delete_management('sumstats_{0}_{1}.xls'.format(brand_name,date_time),"")
+
+# output_grouping_csv='{0}/Grouping_data_{1}_{2}.xls'.format(dir,brand_name,date_time)
+# arcpy.conversion.TableToExcel(output_grouping, output_grouping_csv)
+# df_grouping = pd.read_excel(output_grouping_csv)
+
+
+
+# inputtt="C:/Users/arefeh.alaee/Documents/ArcGIS/Default.gdb/pop_hhhl_GroupingAnalysis33"
+# outputtt="C:/Users/arefeh.alaee/Documents/ArcGIS/Default.gdb/pop_hhhl_GroupingAnalysis33_grouping"
+# arcpy.gapro.GroupByProximity(inputtt, outputtt, "NEAR_PLANAR")
+
+
+
+
+# TargetAudience.csv
+# temmp
+# clustering.gdb/TAZ_join
+# clustering.gdb/cluster
+# cluster.xls
+##############################################################################
+# from esda.moran import Moran
+# from libpysal.weights import Queen, KNN
+# import seaborn 
+# import pandas
+# import geopandas 
+# import numpy
+# import matplotlib.pyplot as plt
+
+# import matplotlib.pyplot as plt  # Graphics
+# from matplotlib import colors
+# import seaborn                   # Graphics
+# # import geopandas                 # Spatial data manipulation
+# import pandas                    # Tabular data manipulation
+# import rioxarray                 # Surface data manipulation
+# import xarray                    # Surface data manipulation
+# from pysal.explore import esda   # Exploratory Spatial analytics
+# from pysal.lib import weights    # Spatial weights
+# import contextily                # Background tiles
+
+
+
+# # lisa = esda.moran.Moran_Local(db['Pct_Leave'], w)
+# print ('hello')
+
+# import seaborn as sns
+# import pandas as pd
+# import esda
+# # from pysal.lib import weights
+# # from splot.esda import moran_scatterplot, lisa_cluster, plot_local_autocorrelation
+# # import geopandas as gpd 
+# import numpy as np
+# # import contextily as ctx
+# import matplotlib.pyplot as plt
+
+
+
